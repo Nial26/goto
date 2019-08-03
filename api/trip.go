@@ -7,8 +7,8 @@ import (
 )
 
 type TripDetail struct {
-	Trip models.TripInfo `json:"trip" schema:"trip"`
-	Routes []models.RouteInfo `json"routes" schema:"routes"`
+	Trip models.TripInfo `json:"trip"`
+	Routes []models.RouteInfo `json"routes"`
 }
 
 func GetTripDetail(dbEnv *db.DBEnv, tripId string) (TripDetail, error) {

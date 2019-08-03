@@ -6,13 +6,13 @@ import (
 )
 
 type RouteInfo struct {
-	Id uint8 `json:"id" schema:"id"`
-	TripId string `json:"trip_id" schema:"trip_id"`
-	FromNode string `json:"from_node" schema:"from_node"`
-	ToNode string `json:"to_node" schema:"to_node"`
-	LeavingFromAt time.Time `json:"leaving_from_at" schema:"leaving_from_at"`
-	ArrivingToAt time.Time `json:"arriving_to_at" schema:"arriving_to_at"`
-	Capacity int `json:"capacity" schema:"capacity"`
+	Id uint8 `json:"id"`
+	TripId string `json:"trip_id"`
+	FromNode string `json:"from_node"`
+	ToNode string `json:"to_node"`
+	LeavingFromAt time.Time `json:"leaving_from_at"`
+	ArrivingToAt time.Time `json:"arriving_to_at"`
+	Capacity int `json:"capacity"`
 }
 
 
@@ -23,6 +23,29 @@ func GetRoutes(dbEnv *db.DBEnv, fromNode string, toNode string)([]RouteInfo, err
 
 	queryString := "SELECT * FROM route_info WHERE from_node = ? AND to_node = ?"
 	rows, err := dbEnv.Db.Query(queryString, fromNode, toNode)
+	defer rows.Close()
+
+	for rows.Next() {
+		var route RouteInfo
+		err = rows.Scan(&route.Id, &route.TripId, &route.FromNode, &route.ToNode, &route.LeavingFromAt, &route.ArrivingToAt, &route.Capacity)
+		if err != nil {
+			return nil, err
+		}
+		routes = append(routes, route)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+	return routes, nil
+}
+
+
+func GetRoutesFrom(dbEnv *db.DBEnv, fromNode string)([]RouteInfo, error){
+	routes := []RouteInfo{}
+
+	queryString := "SELECT * FROM route_info WHERE from_node = ?"
+	rows, err := dbEnv.Db.Query(queryString, fromNode)
 	defer rows.Close()
 
 	for rows.Next() {

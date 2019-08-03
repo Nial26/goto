@@ -1,25 +1,22 @@
 package main
 
 import (
-	// "fmt"
 	"log"
 	"github.com/nial26/goto/db"
-	// "github.com/nial26/goto/models"
 	"github.com/gorilla/mux"
 	"github.com/nial26/goto/api"
-
-	"github.com/gorilla/schema"
+	// "strconv"
 	// "time"
 	"net/http"
 	"encoding/json"
 )
 
 var dbEnv *db.DBEnv
-var decoder = schema.NewDecoder()
 
 func main(){
 
 	dbEnv = initDb("root:@tcp(127.0.0.1:3306)/goto?parseTime=true")
+
 
 	r := mux.NewRouter()
 	apiRouter := r.PathPrefix("/api/v0.1").Subrouter()
@@ -53,6 +50,37 @@ func registerApiRoutes(r *mux.Router){
 	log.Println("Registering Routes to /api/v0.1 ...")
 	r.HandleFunc("/get_trip/{trip_id}", loggingMiddleWare(getTripInfoHandler)).Methods("GET")
 	r.HandleFunc("/register_trip", loggingMiddleWare(registerTripHandler)).Methods("POST")
+	r.HandleFunc("/get_transits", loggingMiddleWare(getTransitsHandler)).Methods("GET")
+}
+
+func getTransitsHandler(w http.ResponseWriter, r *http.Request) {
+	var transitSearchFilter api.TransitSearchFilter
+	vals := r.URL.Query()
+
+	log.Println(vals)
+
+	// layout := "2019-08-03 13:37:33"
+	// reachingBefore, err := time.Parse(layout, vals["reaching_before"][0])
+	
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+
+	// capacity, err := strconv.Atoi(vals["capacity"][0])
+
+	// if err != nil {
+	// 	log.Println(err)
+	// }
+
+
+	transitSearchFilter = api.TransitSearchFilter{From: vals["from"][0], To: vals["to"][0]}
+	transit, err := api.GetTransits(dbEnv, transitSearchFilter)
+	if err != nil {
+		log.Panic(err)
+	}
+	json.NewEncoder(w).Encode(transit)
+	
+
 }
 
 func registerTripHandler(w http.ResponseWriter, r *http.Request){
