@@ -7,12 +7,15 @@ import (
 	// "github.com/nial26/goto/models"
 	"github.com/gorilla/mux"
 	"github.com/nial26/goto/api"
+
+	"github.com/gorilla/schema"
 	// "time"
 	"net/http"
 	"encoding/json"
 )
 
 var dbEnv *db.DBEnv
+var decoder = schema.NewDecoder()
 
 func main(){
 
@@ -49,8 +52,18 @@ func loggingMiddleWare(f http.HandlerFunc) http.HandlerFunc {
 func registerApiRoutes(r *mux.Router){
 	log.Println("Registering Routes to /api/v0.1 ...")
 	r.HandleFunc("/get_trip/{trip_id}", loggingMiddleWare(getTripInfoHandler)).Methods("GET")
+	r.HandleFunc("/register_trip", loggingMiddleWare(registerTripHandler)).Methods("POST")
 }
 
+func registerTripHandler(w http.ResponseWriter, r *http.Request){
+	var tripDetail api.TripDetail
+	json.NewDecoder(r.Body).Decode(&tripDetail)
+	err := api.CreateTrip(dbEnv, tripDetail)
+	if err != nil {
+		log.Panic(err)
+	}
+
+}
 
 func getTripInfoHandler(w http.ResponseWriter, r *http.Request){
 	vars := mux.Vars(r)

@@ -6,13 +6,13 @@ import (
 )
 
 type RouteInfo struct {
-	Id uint8 `json:"id"`
-	TripId string `json:"trip_id"`
-	FromNode string `json:"from_node"`
-	ToNode string `json:"to_node"`
-	LeavingFromAt time.Time `json:"leaving_from_at"`
-	ArrivingToAt time.Time `json:"arriving_to_at"`
-	Capacity int `json:"capacity"`
+	Id uint8 `json:"id" schema:"id"`
+	TripId string `json:"trip_id" schema:"trip_id"`
+	FromNode string `json:"from_node" schema:"from_node"`
+	ToNode string `json:"to_node" schema:"to_node"`
+	LeavingFromAt time.Time `json:"leaving_from_at" schema:"leaving_from_at"`
+	ArrivingToAt time.Time `json:"arriving_to_at" schema:"arriving_to_at"`
+	Capacity int `json:"capacity" schema:"capacity"`
 }
 
 
@@ -41,7 +41,7 @@ func GetRoutes(dbEnv *db.DBEnv, fromNode string, toNode string)([]RouteInfo, err
 }
 
 
-func CreateRoutes(dbEnv *db.DBEnv, routes []RouteInfo) (error) {
+func CreateRoutes(dbEnv *db.DBEnv, routes []RouteInfo) error {
 	stmt, err := dbEnv.Db.Prepare("INSERT INTO route_info (trip_id, from_node, to_node, leaving_from_at, arriving_to_at, capacity) VALUES (?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return err

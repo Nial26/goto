@@ -6,12 +6,12 @@ import (
 )
 
 type TripInfo struct {
-	Id uint8 `json:"id"`
-	TripId string `json:"trip_id"`
-	FromPosition string `json:"from_position"`
-	ToPosition string `json:"to_position"`
-	Vehicle string `json:"vehicle"`
-	MaxCapacity int `json:"max_capacity"`
+	Id uint8 `json:"id" schema:"id"`
+	TripId string `json:"trip_id" schema:"trip_id"`
+	FromPosition string `json:"from_position" schema:"from_position"`
+	ToPosition string `json:"to_position" schema:"to_position"`
+	Vehicle string `json:"vehicle" schema:"vehicle"`
+	MaxCapacity int `json:"max_capacity" schema:"max_capacity"`
 }
 
 
