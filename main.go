@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"github.com/nial26/goto/db"
 	"github.com/gorilla/mux"
@@ -16,6 +17,7 @@ var dbEnv *db.DBEnv
 func main(){
 	dbEnv = initDb("root:@tcp(127.0.0.1:3306)/goto?parseTime=true")
 	r := mux.NewRouter()
+	registerDefaultRoutes(r)
 	apiRouter := r.PathPrefix("/api/v0.1").Subrouter()
 	registerApiRoutes(apiRouter)
 	log.Println("Starting Server...")
@@ -28,6 +30,12 @@ func loggingMiddleWare(f http.HandlerFunc) http.HandlerFunc {
 		log.Println(r.Method, r.URL.Path)
 		f(w, r)
 	}
+}
+
+func registerDefaultRoutes(r *mux.Router){
+	r.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request){
+		fmt.Fprintf(w, "pong")
+	})
 }
 
 func registerApiRoutes(r *mux.Router){
