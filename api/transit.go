@@ -34,10 +34,10 @@ func GetTransits(dbEnv *db.DBEnv, transitSearchFilter TransitSearchFilter) (Tran
 }
 
 func GetRoutesBetween(dbEnv *db.DBEnv, from string, to string, seenRoutes []models.RouteInfo, possiblePaths *[][]models.RouteInfo) (error) {
-	log.Printf("[api/GetRoutesBetween] Searching for Routes between : %s and %s with seenRoutes: %v", from, to, seenRoutes)
 	if from == to {
-		log.Println("[api/GetRoutesBetween] Got From and To as Same Returning seenRoutes : ", seenRoutes)
-		*possiblePaths = append(*possiblePaths, seenRoutes)
+		newSlice := []models.RouteInfo{}
+		newSlice = append(newSlice, seenRoutes...)
+		*possiblePaths = append(*possiblePaths, newSlice)
 		return nil
 	}
 
@@ -47,13 +47,12 @@ func GetRoutesBetween(dbEnv *db.DBEnv, from string, to string, seenRoutes []mode
 		return err
 	}
 
-	log.Printf("[api/GetRoutesBetween] Nodes originating from %s : %v", from, routes)
-
-
 	for _, route := range routes{
+
 		if !IsPresentIn(route, seenRoutes) {
 			seenRoutes = append(seenRoutes, route)
 			GetRoutesBetween(dbEnv, route.ToNode, to, seenRoutes, possiblePaths)
+			seenRoutes = seenRoutes[:len(seenRoutes)-1]
 		}
 	}
 	return nil

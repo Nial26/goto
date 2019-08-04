@@ -100,12 +100,3 @@ func GetRoutesForTrip(dbEnv *db.DBEnv, tripId string) ([]RouteInfo, error) {
 	}
 	return routes, nil
 }
-
-// func CreateTripInfo(dbEnv *db.DBEnv, t TripInfo) (sql.Result, error) {
-// 	insertStatement := "INSERT INTO trip_info(trip_id, from_position, to_position, vehicle) VALUES (?, ?, ?, ?)"
-// 	res, err := dbEnv.Db.Exec(insertStatement, t.TripId, t.FromPosition, t.ToPosition, t.Vehicle)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return res, nil
-// }
